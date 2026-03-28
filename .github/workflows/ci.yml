@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run release hygiene checks
+        run: bash scripts/check-release-hygiene.sh
+
+  build-test:
+    runs-on: ubuntu-24.04
+    needs: hygiene
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake \
+            doxygen \
+            g++ \
+            ninja-build \
+            pkg-config
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Generate API docs
+        run: cmake --build build --target docs
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Validate install tree
+        run: |
+          INSTALL_DIR="$(mktemp -d)"
+          cmake --install build --prefix "$INSTALL_DIR"
+          test -x "$INSTALL_DIR/bin/frame_cli"
+
+      - name: Validate CLI startup
+        run: ./build/frame_cli --help
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/doxygen/html
+
+  deploy-docs:
+    runs-on: ubuntu-24.04
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

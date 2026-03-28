@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Example Project
+GenericName=Example application
+Comment=Generic desktop entry template for a C++ project
+Exec=frame_cli --help
+Terminal=true
+NoDisplay=true
+Categories=Development;Utility;
+StartupNotify=false

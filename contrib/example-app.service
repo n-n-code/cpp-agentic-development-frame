@@ -1,0 +1,12 @@
+[Unit]
+Description=Example project background service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/frame_cli --help
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
