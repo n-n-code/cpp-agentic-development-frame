@@ -1,4 +1,6 @@
 # C++ Agentic Development Frame
+[![Actions Status](https://github.com/n-n-code/mutterkey/workflows/CI/badge.svg)](https://github.com/n-n-code/mutterkey/actions)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 A generic CMake-first C++ project frame for agentic development.
 
