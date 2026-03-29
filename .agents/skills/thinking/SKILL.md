@@ -1,6 +1,6 @@
 ---
 name: thinking
-description: Token-efficient planning and design skill. Merges brainstorming, concise planning, and kaizen-style incremental improvement.
+description: Planning and design skill. Merges brainstorming, concise planning, and kaizen-style incremental improvement.
 ---
 
 # Thinking
