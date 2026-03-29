@@ -1,6 +1,6 @@
 ---
 name: documenter
-description: Token-efficient documentation skill for README, API docs, code comments, release docs, and AI-friendly project documentation.
+description: Documentation skill for README, API docs, code comments, release docs, and AI-friendly project documentation.
 ---
 
 # Documenter
