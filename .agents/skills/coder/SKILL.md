@@ -1,6 +1,6 @@
 ---
 name: coder
-description: Token-efficient implementation skill for C++-first repos. Merges C++ engineering, code review discipline, optional backend layering guidance, and optional UI/frontend quality guidance.
+description: Implementation skill for C++-first repos. Merges C++ engineering, code review discipline, optional backend layering guidance, and optional UI/frontend quality guidance.
 ---
 
 # Coder
