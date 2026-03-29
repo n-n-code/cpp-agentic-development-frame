@@ -24,7 +24,7 @@ This frame is designed for projects that want:
 
 Defaults:
 
-- portable C++20 library + CLI example
+- portable C++23 library + CLI example
 - no Qt requirement by default
 - optional Qt/Clazy support as the example stack for projects that add a UI layer
 - MIT license

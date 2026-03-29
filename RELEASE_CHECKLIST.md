@@ -31,6 +31,9 @@ bash scripts/check-release-hygiene.sh
 bash scripts/run-release-checklist.sh
 ```
 
+- Confirm the build configuration still matches the repo baseline language
+  standard, which is C++23.
+
 - Configure a fresh out-of-tree build:
 
 ```bash

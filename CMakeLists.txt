@@ -8,7 +8,7 @@ include(CTest)
 set(FRAME_LICENSE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/licenses/${PROJECT_NAME}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -30,7 +30,7 @@ add_library(project_core STATIC
 )
 
 target_include_directories(project_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_compile_features(project_core PUBLIC cxx_std_20)
+target_compile_features(project_core PUBLIC cxx_std_23)
 
 add_executable(frame_cli
     src/main.cpp

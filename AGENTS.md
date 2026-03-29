@@ -8,6 +8,7 @@ agentic development.
 Baseline shape:
 
 - CMake is the only supported build system
+- C++23 is the baseline language standard
 - Out-of-tree builds are the default workflow
 - Repo-owned code should stay portable, local-first, and easy to validate
 - One small library target plus one CLI target form the default example shape
