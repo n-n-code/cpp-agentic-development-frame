@@ -1,6 +1,6 @@
 ---
 name: security
-description: Token-efficient security skill for threat modeling, secure defaults, and security-focused code review in generic software projects.
+description: Security skill for threat modeling, secure defaults, and security-focused code review in generic software projects.
 ---
 
 # Security
