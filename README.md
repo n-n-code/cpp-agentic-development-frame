@@ -2,6 +2,8 @@
 [![Actions Status](https://github.com/n-n-code/cpp-agentic-development-frame/workflows/CI/badge.svg)](https://github.com/n-n-code/cpp-agentic-development-frame/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+<img width="2048" height="1024" alt="tiredrobotmaster" src="https://github.com/user-attachments/assets/477996ef-bdb9-4090-a7f6-7e310e200eb4" />
+
 A generic CMake-first C++ project frame for agentic development.
 
 It packages a buildable example library and CLI together with repo-local agent
