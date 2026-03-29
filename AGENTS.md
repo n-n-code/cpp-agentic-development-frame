@@ -13,7 +13,7 @@ Baseline shape:
 - One small library target plus one CLI target form the default example shape
 - Deterministic `CTest`, `clang-tidy`, Doxygen, release-hygiene, and Valgrind
   lanes are part of the maintained contract
-- Qt/Clazy are optional paths, not baseline assumptions
+- Qt/Clazy provide the example UI stack, not the baseline assumption
 - Public docs are generated from repo-owned headers and `docs/mainpage.md`
 - Feature plans live under `upcoming_features/` as tracked Markdown files only
 
@@ -71,8 +71,8 @@ Use the smallest validation set that proves the change, then extend as needed:
 
 - `ctest --test-dir "$BUILD_DIR" --output-on-failure`
 - `cmake --build "$BUILD_DIR" --target clang-tidy`
-- `cmake --build "$BUILD_DIR" --target clazy` for Qt-enabled projects when
-  available
+- `cmake --build "$BUILD_DIR" --target clazy` when the project uses the
+  example Qt-based UI stack and the tool is available
 - `cmake --build "$BUILD_DIR" --target lint`
 - `cmake --build "$BUILD_DIR" --target docs`
 - `bash scripts/run-valgrind.sh "$BUILD_DIR"`

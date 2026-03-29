@@ -63,6 +63,9 @@ cmake --build "$BUILD_DIR" --target clang-tidy
 cmake --build "$BUILD_DIR" --target clazy
 ```
 
+- Treat `clazy` as part of the Qt-based UI variant rather than a baseline lane
+  for CLI-only projects.
+
 - If repo-owned public headers or docs changed, also run:
 
 ```bash

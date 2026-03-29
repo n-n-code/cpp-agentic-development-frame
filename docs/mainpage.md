@@ -10,7 +10,7 @@ expectations rather than end-user setup.
 - `frame_cli` is the example command-line target
 - build, docs, tests, analyzers, and release helpers are first-class repo
   concerns
-- Qt/Clazy integration is optional rather than baseline
+- Qt/Clazy form the example UI stack rather than the baseline project shape
 - deterministic tests live under `tests/`
 - future plans live under `upcoming_features/`
 

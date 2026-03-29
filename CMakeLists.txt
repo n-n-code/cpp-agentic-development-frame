@@ -14,8 +14,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(FRAME_ENABLE_ASAN "Enable AddressSanitizer for repo-owned code" OFF)
 option(FRAME_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer for repo-owned code" OFF)
-option(FRAME_ENABLE_QT "Enable optional Qt integration hooks" OFF)
-option(FRAME_ENABLE_CLAZY "Enable clazy target when Qt projects need it" OFF)
+option(FRAME_ENABLE_QT "Enable the example Qt-based UI integration path" OFF)
+option(FRAME_ENABLE_CLAZY "Enable the clazy analyzer lane for the Qt-based UI path" OFF)
 
 find_package(Doxygen QUIET)
 

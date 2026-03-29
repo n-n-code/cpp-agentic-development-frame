@@ -16,7 +16,7 @@ This frame is designed for projects that want:
 - project-local skills under `.agents/skills/`
 - CMake-only build and install flow
 - deterministic `CTest` coverage with enforced WHAT/HOW/WHY commentary
-- `clang-tidy`, optional `clazy`, Doxygen, and Valgrind lanes
+- `clang-tidy`, Doxygen, and Valgrind lanes, plus an example Qt/Clazy path for UI projects
 - release hygiene and release checklist automation
 - generic CI and release GitHub workflows
 
@@ -24,7 +24,7 @@ Defaults:
 
 - portable C++20 library + CLI example
 - no Qt requirement by default
-- optional Qt/Clazy hooks for projects that need them
+- optional Qt/Clazy support as the example stack for projects that add a UI layer
 - MIT license
 
 ## Quick Start
@@ -71,7 +71,7 @@ upcoming_features/     Forward-looking implementation plans
 Optional local tooling:
 
 - `clang-tidy`
-- `clazy-standalone` for Qt projects
+- `clazy-standalone` when using the example Qt-based UI stack
 - `doxygen`
 - `valgrind`
 - `ninja-build`
