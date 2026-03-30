@@ -1,7 +1,12 @@
 function(frame_add_test target_name)
     add_executable(${target_name} ${ARGN})
-    target_include_directories(${target_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+    target_include_directories(${target_name} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    )
     target_link_libraries(${target_name} PRIVATE project_core)
+    frame_enable_sanitizers(${target_name} PRIVATE)
+    frame_enable_coverage(${target_name} PRIVATE)
     add_test(NAME ${target_name} COMMAND ${target_name})
 endfunction()
 

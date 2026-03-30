@@ -34,7 +34,13 @@ bash scripts/run-release-checklist.sh
 - Confirm the build configuration still matches the repo baseline language
   standard, which is C++23.
 
-- Configure a fresh out-of-tree build:
+- Configure a fresh out-of-tree build (prefer presets when available):
+
+```bash
+cmake --preset ci
+```
+
+Or manually:
 
 ```bash
 BUILD_DIR="$(mktemp -d /tmp/cpp-frame-build-XXXXXX)"
@@ -45,6 +51,12 @@ cmake -S . -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug
 
 ```bash
 cmake --build "$BUILD_DIR" -j"$(nproc)"
+```
+
+- Verify formatting compliance:
+
+```bash
+cmake --build "$BUILD_DIR" --target format-check
 ```
 
 - Run tests:
@@ -63,11 +75,12 @@ bash scripts/run-valgrind.sh "$BUILD_DIR"
 
 ```bash
 cmake --build "$BUILD_DIR" --target clang-tidy
+cmake --build "$BUILD_DIR" --target cppcheck
 cmake --build "$BUILD_DIR" --target clazy
 ```
 
 - Treat `clazy` as part of the Qt-based UI variant rather than a baseline lane
-  for CLI-only projects.
+  for CLI-only projects. Treat `cppcheck` as optional when not installed.
 
 - If repo-owned public headers or docs changed, also run:
 
@@ -99,8 +112,11 @@ cmake --install "$BUILD_DIR" --prefix "$INSTALL_DIR"
 ## Documentation And User Flow
 
 - Review [README.md](README.md) for consistency with current behavior.
+- Review [AGENTS.md](AGENTS.md) for alignment with current tooling and
+  workflows.
 - Review [docs/mainpage.md](docs/mainpage.md) and [docs/Doxyfile.in](docs/Doxyfile.in)
   if the release touched repo-owned API docs or docs/CI wiring.
+- Confirm `CMakePresets.json` presets still match the documented workflows.
 - Confirm docs still describe the intended build, install, test, and release
   flows.
 

@@ -1,0 +1,24 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterClass: true
+  AfterEnum: true
+  BeforeElse: true
+  BeforeCatch: true
+  SplitEmptyFunction: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+IncludeBlocks: Preserve
+SortIncludes: CaseSensitive

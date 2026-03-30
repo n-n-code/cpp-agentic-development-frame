@@ -31,6 +31,17 @@ Defaults:
 
 ## Quick Start
 
+Using CMake presets (recommended):
+
+```bash
+cmake --preset dev
+cmake --build build/dev -j"$(nproc)"
+ctest --test-dir build/dev --output-on-failure
+./build/dev/frame_cli --help
+```
+
+Or manually:
+
 ```bash
 BUILD_DIR="$(mktemp -d /tmp/cpp-frame-build-XXXXXX)"
 cmake -S . -B "$BUILD_DIR" -G Ninja
@@ -39,7 +50,8 @@ ctest --test-dir "$BUILD_DIR" --output-on-failure
 "$BUILD_DIR/frame_cli" --help
 ```
 
-If you do not have `ninja-build`, omit `-G Ninja`.
+Available presets: `dev` (debug + sanitizers), `release` (optimized + LTO),
+`ci` (matches GitHub Actions), `coverage` (gcov instrumentation).
 
 ## What This Frame Includes
 
@@ -47,11 +59,14 @@ If you do not have `ninja-build`, omit `-G Ninja`.
 - `.agents/skills/`: generic project-local skills for coding, documenting,
   planning, security, release work, vendor-boundary work, and diagnostics
 - `src/`: small example library + CLI
-- `tests/`: deterministic example tests and `CTest` registration
+- `tests/`: deterministic example tests, `CTest` registration, and
+  `frame_test.h` micro-framework
 - `docs/`: API-focused Doxygen setup
 - `scripts/`: hygiene, commentary, release, and Valgrind helpers
 - `.github/workflows/`: CI and release workflow templates
 - `contrib/`: optional system integration examples
+- `benchmarks/`: optional chrono-based micro-benchmark harness
+- `CMakePresets.json`: named build configurations for dev/release/ci/coverage
 - `upcoming_features/`: tracked plan folder
 
 ## Project Layout
@@ -59,12 +74,13 @@ If you do not have `ninja-build`, omit `-G Ninja`.
 ```text
 .agents/skills/        Project-local agent skills
 .github/workflows/     Generic CI and release workflow templates
+benchmarks/            Optional micro-benchmark harness
 cmake/                 Analyzer helper scripts
 contrib/               Optional service/desktop integration examples
 docs/                  Doxygen config and API-focused docs
-scripts/               Hygiene, release, and diagnostics helpers
+scripts/               Hygiene, release, diagnostics, and init helpers
 src/                   Example library and CLI
-tests/                 Deterministic example tests
+tests/                 Deterministic example tests and frame_test.h
 upcoming_features/     Forward-looking implementation plans
 ```
 
@@ -72,20 +88,27 @@ upcoming_features/     Forward-looking implementation plans
 
 Optional local tooling:
 
+- `clang-format`
 - `clang-tidy`
 - `clazy-standalone` when using the example Qt-based UI stack
+- `cppcheck`
 - `doxygen`
+- `gcovr` (for coverage HTML reports)
 - `valgrind`
 - `ninja-build`
 
 Useful targets when the tools are installed:
 
 ```bash
+cmake --build "$BUILD_DIR" --target format         # auto-format sources
+cmake --build "$BUILD_DIR" --target format-check   # CI formatting check
 cmake --build "$BUILD_DIR" --target clang-tidy
+cmake --build "$BUILD_DIR" --target cppcheck
 cmake --build "$BUILD_DIR" --target clazy
 cmake --build "$BUILD_DIR" --target docs
-cmake --build "$BUILD_DIR" --target lint
+cmake --build "$BUILD_DIR" --target lint            # aggregates analyzers
 cmake --build "$BUILD_DIR" --target valgrind
+cmake --build "$BUILD_DIR" --target coverage        # tests + gcov report
 ```
 
 ## Example Install Validation
@@ -100,7 +123,11 @@ test -x "$INSTALL_DIR/bin/frame_cli"
 
 Typical first steps:
 
-1. Rename the example targets, namespaces, and install paths.
+1. Run the init script to rename all placeholders:
+   ```bash
+   ./scripts/init-project.sh --name "Your Project Name"    # dry-run
+   ./scripts/init-project.sh --name "Your Project Name" --apply
+   ```
 2. Replace the example library/CLI code in `src/`.
 3. Update `AGENTS.md` with project-specific constraints.
 4. Trim or extend `.agents/skills/` to match the real project.

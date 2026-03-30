@@ -20,8 +20,10 @@ Read `AGENTS.md` first. This skill adds implementation guidance only.
 1. Inspect the touched code, build shape, and tests.
 2. Keep interfaces simple and behavior-oriented.
 3. Implement the narrowest change that solves the problem.
-4. Add or update tests close to the changed behavior.
-5. Run relevant build/test/analyzer targets.
+4. Add or update tests close to the changed behavior using `frame_test.h`
+   macros (`FRAME_TEST`, `FRAME_EXPECT_EQ`, `FRAME_EXPECT_TRUE`, etc.).
+5. Run `format` before committing, then run relevant build/test/analyzer
+   targets.
 
 ## C++ Rules
 
