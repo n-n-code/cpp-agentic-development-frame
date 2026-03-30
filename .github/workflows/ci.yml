@@ -32,6 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
+            clang-format \
             cmake \
             doxygen \
             g++ \
@@ -40,6 +41,9 @@ jobs:
 
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_STANDARD=23
+
+      - name: Check formatting
+        run: cmake --build build --target format-check
 
       - name: Build
         run: cmake --build build

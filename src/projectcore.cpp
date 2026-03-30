@@ -17,12 +17,11 @@ namespace {
 
 std::string trimCopy(std::string_view text)
 {
-    const auto first = std::ranges::find_if_not(text, [](const char ch) {
-        return isSpace(static_cast<unsigned char>(ch));
-    });
+    const auto first = std::ranges::find_if_not(
+        text, [](const char ch) { return isSpace(static_cast<unsigned char>(ch)); });
     const auto last = std::ranges::find_if_not(std::views::reverse(text), [](const char ch) {
-        return isSpace(static_cast<unsigned char>(ch));
-    }).base();
+                          return isSpace(static_cast<unsigned char>(ch));
+                      }).base();
 
     if (first >= last) {
         return {};

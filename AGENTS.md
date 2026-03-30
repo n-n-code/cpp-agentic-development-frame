@@ -12,11 +12,14 @@ Baseline shape:
 - Out-of-tree builds are the default workflow
 - Repo-owned code should stay portable, local-first, and easy to validate
 - One small library target plus one CLI target form the default example shape
-- Deterministic `CTest`, `clang-tidy`, Doxygen, release-hygiene, and Valgrind
-  lanes are part of the maintained contract
+- Deterministic `CTest`, `clang-tidy`, `clang-format`, `cppcheck`, Doxygen,
+  release-hygiene, Valgrind, and coverage lanes are part of the maintained
+  contract
 - Qt/Clazy provide the example UI stack, not the baseline assumption
 - Public docs are generated from repo-owned headers and `docs/mainpage.md`
 - Feature plans live under `upcoming_features/` as tracked Markdown files only
+  (see `upcoming_features/TEMPLATE.md` for the expected format)
+- CMake presets provide named configurations for common workflows
 
 Repository principles:
 
@@ -31,20 +34,33 @@ Repository principles:
 ## Key Paths
 
 - `src/`: repo-owned library and CLI code
-- `tests/`: deterministic example tests and test registration
+- `tests/`: deterministic example tests, test registration, and `frame_test.h`
+  micro-framework
 - `docs/`: Doxygen config and API-focused main page
 - `scripts/`: hygiene, release, and diagnostics helpers
 - `contrib/`: optional service/desktop integration examples
 - `cmake/`: reusable analyzer helper scripts
 - `.agents/skills/`: project-local agent overlays and merged skills
 - `.github/workflows/`: generic CI and release workflow templates
+- `benchmarks/`: optional chrono-based micro-benchmarks and `frame_bench.h`
+  harness
 - `upcoming_features/`: forward-looking implementation plans
 
 ## Build And Validation
 
 Read `README.md` first before changing build, setup, or release behavior.
 
-Use an out-of-tree build:
+Prefer CMake presets for common workflows:
+
+```bash
+cmake --preset dev
+cmake --build build/dev -j"$(nproc)"
+```
+
+Available presets: `dev` (debug + sanitizers), `release` (optimized + LTO),
+`ci` (matches GitHub Actions), `coverage` (gcov instrumentation).
+
+Manual out-of-tree build (when presets are unavailable):
 
 ```bash
 BUILD_DIR="$(mktemp -d /tmp/cpp-frame-build-XXXXXX)"
@@ -54,7 +70,7 @@ cmake --build "$BUILD_DIR" -j"$(nproc)"
 
 If `ninja-build` is unavailable, omit `-G Ninja`.
 
-Optional sanitizer lane:
+Optional sanitizer lane (included in the `dev` preset):
 
 ```bash
 cmake -S . -B "$BUILD_DIR" -G Ninja \
@@ -74,7 +90,9 @@ Use the smallest validation set that proves the change, then extend as needed:
 - `cmake --build "$BUILD_DIR" --target clang-tidy`
 - `cmake --build "$BUILD_DIR" --target clazy` when the project uses the
   example Qt-based UI stack and the tool is available
-- `cmake --build "$BUILD_DIR" --target lint`
+- `cmake --build "$BUILD_DIR" --target format-check`
+- `cmake --build "$BUILD_DIR" --target lint` (includes clang-tidy and cppcheck
+  when available)
 - `cmake --build "$BUILD_DIR" --target docs`
 - `bash scripts/run-valgrind.sh "$BUILD_DIR"`
 - `bash scripts/check-release-hygiene.sh`
@@ -86,9 +104,55 @@ INSTALL_DIR="$(mktemp -d /tmp/cpp-frame-install-XXXXXX)"
 cmake --install "$BUILD_DIR" --prefix "$INSTALL_DIR"
 ```
 
+## Formatting
+
+Run `cmake --build "$BUILD_DIR" --target format` before committing to keep
+source files consistently formatted. CI enforces `format-check` and will reject
+unformatted code. The `.clang-format` config at the repo root defines the
+canonical style.
+
+## Coverage
+
+Build with the `coverage` preset and run the `coverage` target:
+
+```bash
+cmake --preset coverage
+cmake --build build/coverage
+cmake --build build/coverage --target coverage
+```
+
+This runs tests and collects coverage via `gcovr`. HTML output lands in
+`build/coverage/coverage/`. New code should maintain or improve line coverage.
+
+## Benchmarks
+
+Build with `-DFRAME_ENABLE_BENCHMARKS=ON` and run manually:
+
+```bash
+cmake --build "$BUILD_DIR" --target example_bench
+"$BUILD_DIR/benchmarks/example_bench"
+```
+
+Add benchmarks for hot paths, algorithms, and performance-sensitive code.
+Use `FRAME_BENCHMARK(name, iterations)` from `benchmarks/frame_bench.h`.
+
+## Project Setup
+
+When adapting this frame for a new project, use the init script:
+
+```bash
+./scripts/init-project.sh --name "Your Project Name"    # dry-run
+./scripts/init-project.sh --name "Your Project Name" --apply
+```
+
+This renames all placeholder targets, namespaces, prefixes, and filenames.
+
 ## Testing Rules
 
 - Keep repo-owned tests deterministic and headless under `CTest`
+- Use the `frame_test.h` micro-framework: `FRAME_TEST(name)` for registration,
+  `FRAME_EXPECT_EQ`, `FRAME_EXPECT_TRUE`, `FRAME_EXPECT_FALSE`,
+  `FRAME_EXPECT_THROWS` for assertions, `FRAME_RUN_TESTS()` in main
 - Keep `WHAT/HOW/WHY` commentary near the start of real test bodies; the repo
   scripts enforce that contract
 - Prefer pure helper seams and injected fakes over environment-heavy tests

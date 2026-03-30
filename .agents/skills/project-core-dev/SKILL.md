@@ -16,7 +16,9 @@ repo-owned C++ code.
 
 ## Validation
 
-- build out of tree
+- prefer `cmake --preset dev` for development builds
 - run `ctest --output-on-failure` for covered changes
+- run `cmake --build "$BUILD_DIR" --target format-check` before committing
 - run `frame_cli --help` as a lightweight smoke test
 - add docs/analyzer/Valgrind validation when the change surface justifies it
+- run `cppcheck` target when available for additional static analysis

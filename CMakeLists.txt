@@ -14,6 +14,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(FRAME_ENABLE_ASAN "Enable AddressSanitizer for repo-owned code" OFF)
 option(FRAME_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer for repo-owned code" OFF)
+option(FRAME_ENABLE_COVERAGE "Enable gcov/llvm-cov coverage instrumentation" OFF)
+option(FRAME_ENABLE_BENCHMARKS "Build the benchmarks directory" OFF)
 option(FRAME_ENABLE_QT "Enable the example Qt-based UI integration path" OFF)
 option(FRAME_ENABLE_CLAZY "Enable the clazy analyzer lane for the Qt-based UI path" OFF)
 
@@ -41,7 +43,7 @@ set_target_properties(frame_cli PROPERTIES
     OUTPUT_NAME frame_cli
 )
 
-function(frame_enable_sanitizers target_name)
+function(frame_enable_sanitizers target_name visibility)
     if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
         message(WARNING "Sanitizers were requested, but ${CMAKE_CXX_COMPILER_ID} is not configured for repo-owned sanitizer flags")
         return()
@@ -61,13 +63,28 @@ function(frame_enable_sanitizers target_name)
     endif()
 
     if(sanitizer_compile_flags)
-        target_compile_options(${target_name} PRIVATE ${sanitizer_compile_flags})
-        target_link_options(${target_name} PRIVATE ${sanitizer_link_flags})
+        target_compile_options(${target_name} ${visibility} ${sanitizer_compile_flags})
+        target_link_options(${target_name} ${visibility} ${sanitizer_link_flags})
     endif()
 endfunction()
 
-frame_enable_sanitizers(project_core)
-frame_enable_sanitizers(frame_cli)
+frame_enable_sanitizers(project_core PUBLIC)
+frame_enable_sanitizers(frame_cli PRIVATE)
+
+function(frame_enable_coverage target_name visibility)
+    if(NOT FRAME_ENABLE_COVERAGE)
+        return()
+    endif()
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+        message(WARNING "Coverage requested but ${CMAKE_CXX_COMPILER_ID} is not supported")
+        return()
+    endif()
+    target_compile_options(${target_name} ${visibility} --coverage -fprofile-arcs -ftest-coverage)
+    target_link_options(${target_name} ${visibility} --coverage)
+endfunction()
+
+frame_enable_coverage(project_core PUBLIC)
+frame_enable_coverage(frame_cli PRIVATE)
 
 set(FRAME_CLAZY_CHECKS "level0" CACHE STRING "Checks passed to clazy-standalone")
 find_program(FRAME_CLANG_TIDY_BIN NAMES clang-tidy)
@@ -109,6 +126,63 @@ add_custom_target(valgrind
     VERBATIM
 )
 
+find_program(FRAME_CLANG_FORMAT_BIN NAMES clang-format)
+if(FRAME_CLANG_FORMAT_BIN)
+    file(GLOB_RECURSE FRAME_FORMAT_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/*.h
+    )
+
+    add_custom_target(format
+        COMMAND ${FRAME_CLANG_FORMAT_BIN} -i ${FRAME_FORMAT_SOURCES}
+        COMMENT "Running clang-format on repo-owned sources"
+        VERBATIM
+    )
+
+    add_custom_target(format-check
+        COMMAND ${FRAME_CLANG_FORMAT_BIN} --dry-run --Werror ${FRAME_FORMAT_SOURCES}
+        COMMENT "Checking clang-format compliance"
+        USES_TERMINAL
+        VERBATIM
+    )
+else()
+    message(STATUS "clang-format not found; format and format-check targets will be unavailable")
+endif()
+
+find_program(FRAME_CPPCHECK_BIN NAMES cppcheck)
+add_custom_target(cppcheck
+    COMMAND ${CMAKE_COMMAND}
+        -DTOOL_BIN=${FRAME_CPPCHECK_BIN}
+        -DTOOL_NAME=cppcheck
+        -DBUILD_DIR=${CMAKE_BINARY_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-cppcheck.cmake
+    COMMENT "Running cppcheck analysis"
+    USES_TERMINAL
+    VERBATIM
+)
+add_dependencies(lint cppcheck)
+
+if(FRAME_ENABLE_COVERAGE)
+    find_program(FRAME_GCOVR_BIN NAMES gcovr)
+    add_custom_target(coverage
+        COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --output-on-failure
+        COMMAND ${CMAKE_COMMAND} -E echo "---"
+        COMMAND ${CMAKE_COMMAND} -E echo "Collecting coverage data..."
+        COMMAND ${FRAME_GCOVR_BIN}
+            --root ${CMAKE_CURRENT_SOURCE_DIR}
+            --filter ${CMAKE_CURRENT_SOURCE_DIR}/src/
+            --print-summary
+            --html-details ${CMAKE_BINARY_DIR}/coverage/index.html
+        COMMENT "Running tests and collecting coverage"
+        USES_TERMINAL
+        VERBATIM
+    )
+endif()
+
 if(DOXYGEN_FOUND)
     set(FRAME_DOXYGEN_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs/doxygen")
     set(FRAME_DOXYGEN_CONFIG "${CMAKE_BINARY_DIR}/Doxyfile")
@@ -136,4 +210,8 @@ install(FILES contrib/org.example.project.desktop DESTINATION ${CMAKE_INSTALL_DA
 
 if(BUILD_TESTING)
     add_subdirectory(tests)
+endif()
+
+if(FRAME_ENABLE_BENCHMARKS)
+    add_subdirectory(benchmarks)
 endif()
