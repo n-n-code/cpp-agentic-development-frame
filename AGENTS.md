@@ -17,8 +17,16 @@ Baseline shape:
   contract
 - Qt/Clazy provide the example UI stack, not the baseline assumption
 - Public docs are generated from repo-owned headers and `docs/mainpage.md`
-- Feature plans live under `upcoming_features/` as tracked Markdown files only
-  (see `upcoming_features/TEMPLATE.md` for the expected format)
+- Feature plans live under `feature_records/` as tracked Markdown files
+  using lifecycle subdirectories such as `active/`, `planned/`, `done/`, and
+  `superseded/` (see `feature_records/TEMPLATE.md` for the expected format)
+- `config/change-contract-policy.sh` is the repo-local source of truth for change-
+  contract paths, required sections, evidence lanes, and default validation
+  profiles
+- Feature plans act as change contracts: they must declare maintained/new
+  contract points, lifecycle state, uncertainty/cost bands, implementer and
+  verifier ownership, an evidence matrix, implementation notes, verification
+  command/result notes, and any waivers explicitly
 - CMake presets provide named configurations for common workflows
 
 Repository principles:
@@ -41,10 +49,12 @@ Repository principles:
 - `contrib/`: optional service/desktop integration examples
 - `cmake/`: reusable analyzer helper scripts
 - `.agents/skills/`: project-local agent overlays and merged skills
+- `config/change-contract-policy.sh`: repo-local change-contract policy shared by
+  the checker and overlay skill
 - `.github/workflows/`: generic CI and release workflow templates
 - `benchmarks/`: optional chrono-based micro-benchmarks and `frame_bench.h`
   harness
-- `upcoming_features/`: forward-looking implementation plans
+- `feature_records/`: root template/README plus lifecycle-grouped feature records
 
 ## Build And Validation
 
@@ -96,6 +106,7 @@ Use the smallest validation set that proves the change, then extend as needed:
 - `cmake --build "$BUILD_DIR" --target docs`
 - `bash scripts/run-valgrind.sh "$BUILD_DIR"`
 - `bash scripts/check-release-hygiene.sh`
+- `bash scripts/check-change-contracts.sh`
 
 If install layout or shipped assets change, validate a temporary install prefix:
 
@@ -205,11 +216,31 @@ This renames all placeholder targets, namespaces, prefixes, and filenames.
 ## Agent Workflow
 
 - Read `README.md` first, then the touched files before editing
+- Read `config/change-contract-policy.sh` when the work may trigger a substantive
+  change contract
 - Prefer targeted changes over speculative cleanup
 - Keep `README.md`, `AGENTS.md`, `.agents/skills/`, scripts, and workflows
   aligned when the repo workflow changes
-- Store forward-looking feature plans under `upcoming_features/` as tracked
-  Markdown files; update the existing plan rather than scattering notes
+- Store tracked feature plans under `feature_records/` using the lifecycle
+  subdirectory that matches the plan's `State`; update the existing plan rather
+  than scattering notes
+- Treat substantive repo-owned changes in `src/`, `tests/`, `scripts/`, `docs/`,
+  `.github/workflows/`, `cmake/`, `benchmarks/`, `contrib/`, and top-level
+  build/release docs as contract-bearing work that should update a non-template
+  feature plan unless `config/change-contract-policy.sh` narrows or extends that set
+- Keep change-contract fields explicit: `missing` evidence states are not
+  acceptable, waived evidence requires rationale, and implementer/verifier
+  identity matches require a self-validation waiver
+- Keep lifecycle state current so active, done, and superseded work can be
+  distinguished explicitly in `feature_records/`
+- Prefer `bash scripts/set-feature-record-lifecycle.sh <record> <state>` when
+  transitioning feature records between lifecycle folders
+- When moving a record to `superseded`, provide a replacement path so
+  `Superseded by` stays explicit
+- Keep implementation notes owned by the implementer and verification notes
+  owned by the verifier so the plan itself records the responsibility split
+- Keep verifier notes concrete: record commands run, observed results, and any
+  contract mismatches rather than only a summary sentence
 - Do not leave generated artifacts in the repo tree
 - Do not assume the workspace is a valid Git repo; if Git commands fail,
   continue with file-based validation and note the limitation

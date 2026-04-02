@@ -83,6 +83,8 @@ do_replace() {
         -e "s/cpp_agentic_development_frame/${SNAKE_NAME}/g" \
         -e "s/ProjectCoreTest/${PASCAL_NAME}CoreTest/g" \
         -e "s/ProjectCore/${PASCAL_NAME}Core/g" \
+        -e "s/namespace frame::test/namespace ${PREFIX_LOWER}::test/g" \
+        -e "s/namespace frame/namespace ${PREFIX_LOWER}/g" \
         -e "s/projectcore/${PREFIX_LOWER}core/g" \
         -e "s/project_core/${PREFIX_LOWER}_core/g" \
         -e "s/frame_cli/${PREFIX_LOWER}_cli/g" \
@@ -97,6 +99,7 @@ do_replace() {
 
 do_rename_file() {
     local old_path="$REPO_ROOT/$1"
+    [[ -f "$old_path" ]] || return 0
     local dir=$(dirname "$old_path")
     local old_name=$(basename "$old_path")
     local new_name=$(echo "$old_name" \
@@ -144,6 +147,7 @@ else
     trap 'rm -rf "$TMPDIR"' EXIT
 
     for file in $TRACKED_FILES; do
+        [[ -f "$REPO_ROOT/$file" ]] || continue
         mkdir -p "$TMPDIR/$(dirname "$file")"
         cp "$REPO_ROOT/$file" "$TMPDIR/$file"
     done
@@ -155,6 +159,8 @@ else
             -e "s/cpp_agentic_development_frame/${SNAKE_NAME}/g" \
             -e "s/ProjectCoreTest/${PASCAL_NAME}CoreTest/g" \
             -e "s/ProjectCore/${PASCAL_NAME}Core/g" \
+            -e "s/namespace frame::test/namespace ${PREFIX_LOWER}::test/g" \
+            -e "s/namespace frame/namespace ${PREFIX_LOWER}/g" \
             -e "s/projectcore/${PREFIX_LOWER}core/g" \
             -e "s/project_core/${PREFIX_LOWER}_core/g" \
             -e "s/frame_cli/${PREFIX_LOWER}_cli/g" \
