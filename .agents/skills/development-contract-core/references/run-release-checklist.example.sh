@@ -56,7 +56,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$build_dir" ]]; then
-    build_dir="$(mktemp -d /tmp/cpp-frame-build-XXXXXX)"
+    build_dir="$(mktemp -d /tmp/project-release-build-XXXXXX)"
 fi
 
 declare -a generator_args=()
@@ -85,7 +85,6 @@ if command -v doxygen >/dev/null 2>&1; then
 else
     note "Skipping docs because doxygen is not installed"
 fi
-run_cmd "$build_dir/frame_cli" --help
 
 cat <<EOF_SUMMARY
 

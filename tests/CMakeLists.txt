@@ -23,3 +23,11 @@ add_test(NAME frameclihelp COMMAND $<TARGET_FILE:frame_cli> --help)
 add_test(NAME testcommentarycheck
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/check-test-commentary.sh ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
+
+add_test(NAME changecontractcheck
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/test-change-contracts.sh
+)
+
+add_test(NAME featurerecordlifecyclecheck
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/test-feature-record-lifecycle.sh
+)

@@ -91,6 +91,9 @@ print_violation "repository must not track binary release artifacts" "$tracked_b
 commentary_check_output="$(bash "$repo_root/scripts/check-test-commentary.sh" "$repo_root" 2>&1 || true)"
 print_violation "test sources must keep WHAT/HOW/WHY commentary blocks" "$commentary_check_output"
 
+change_contract_output="$(bash "$repo_root/scripts/check-change-contracts.sh" "$repo_root" 2>&1 || true)"
+print_violation "feature plans must keep explicit lifecycle, contract, ownership, evidence, and verifier fields" "$change_contract_output"
+
 if ((failures != 0)); then
     exit 1
 fi

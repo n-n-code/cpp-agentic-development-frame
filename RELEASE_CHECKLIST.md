@@ -9,11 +9,20 @@ Use this checklist before publishing the repository or cutting a release.
 
 ```bash
 bash scripts/check-release-hygiene.sh
+bash scripts/check-change-contracts.sh
 ```
 
 - Verify there are no machine-specific home-directory paths or absolute local
   Markdown links in tracked files.
 - Confirm no generated binaries or large release payloads are tracked in Git.
+- Confirm tracked feature plans keep explicit contract, uncertainty/cost,
+  lifecycle state, responsibilities, evidence matrices, implementation notes,
+  verification command/result notes, and waiver rationale.
+- If any record changed lifecycle, prefer `bash scripts/set-feature-record-lifecycle.sh`
+  over manual moves so the state field and directory stay aligned.
+- Confirm `config/change-contract-policy.sh`, `feature_records/README.md`,
+  `feature_records/TEMPLATE.md`, and
+  `scripts/check-change-contracts.sh` still describe the same contract.
 
 ## Licensing And Provenance
 
