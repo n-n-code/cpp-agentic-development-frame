@@ -5,9 +5,13 @@ description: Overlay for graphical UI and web frontend code. Use alongside the r
 
 # UI/Frontend Guidance
 
-Read `AGENTS.md` first. This is a composable overlay, not a standalone workflow.
+This is a composable overlay, not a standalone workflow.
 Use alongside the repo's implementation skill (e.g. **coding-guidance-cpp**, **project-core-dev**)
 when the change touches UI or frontend code.
+
+Use this as the thin default overlay for ordinary UI work.
+If the task is redesign-heavy, frontend-polish heavy, or needs a stronger UX
+review checklist, prefer `ui-design-guidance`.
 
 ## When to use
 
