@@ -5,9 +5,14 @@ description: Overlay for server-side networked code — HTTP handlers, gRPC serv
 
 # Backend Guidance
 
-Read `AGENTS.md` first. This is a composable overlay, not a standalone workflow.
+This is a composable overlay, not a standalone workflow.
 Use alongside the repo's implementation skill (e.g. **coding-guidance-cpp**, **project-core-dev**)
 when the change touches backend code.
+
+Use this as the thin default backend overlay for ordinary backend work.
+If the task includes service-boundary refactors, repository or transaction work,
+queue or webhook reliability, stronger testing expectations, or explicit
+trust-boundary hardening, prefer `backend-systems-guidance`.
 
 ## When to use
 
